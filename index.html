@@ -29,45 +29,66 @@
       </div>
     </div>
     <script>
+      let friend = {
+        name: '沈炳轶',
+        number: 98,
+        id: 1
+      }
       axios.interceptors.response.use((response) => {
-        // let config = response.config
-        // let {method, url, data} = config // data 是请求的data
-
-        // 下面一行等价于上面两行
         let {config: {method, url, data}} = response
-
         if (url === '/friends/1' && method === 'get') {
+          response.data = friend
+        } else if (url === '/friends/1' && method === 'put') {
+          data = JSON.parse(data)
+          Object.assign(friend, data)
+          response.data = friend
+        } else if (url === '/friends/2' && method === 'get') {
           response.data = {
-            name: '沈炳轶',
-            number: 98,
-            id: 1
+            name: '殷庆安',
+            number: 1,
+            id: 2
+          }
+        } else if (url === '/friends/3' && method === 'get') {
+          response.data = {
+            name: '刘世伟',
+            number: -10,
+            id: 3
           }
         }
         return response
       })
+      /* 上面是假的后台 */
       axios.get('/friends/1')
         .then(({data}) => {
-          setTimeout(() => {
-            let originalHtml = $('#app').html()
-            let newHtml = originalHtml.replace('__name__', data.name).replace('__number__', data.number)
-            $('#app').html(newHtml)
-          }, 1000)
+          let originalHtml = $('#app').html()
+          let newHtml = originalHtml.replace('__name__', data.name).replace('__number__', data.number)
+          $('#app').html(newHtml)
         })
-      setTimeout(() => {
-        $('#addOne').on('click', function(){
-          let oldNumber = $('#number').text() // string
-          let newNumber = oldNumber - 0 + 1
+      $('#app').on('click', '#addOne', function(){
+        let oldNumber = $('#number').text() // string
+        let newNumber = oldNumber - 0 + 1
+        axios.put('/friends/1', {
+          number: newNumber
+        }).then(()=>{
           $('#number').text(newNumber)
         })
-        $('#minusOne').on('click', function(){
-          let oldNumber = $('#number').text() // string
-          let newNumber = oldNumber - 0 - 1
+      })
+      $('#app').on('click', '#minusOne', function(){
+        let oldNumber = $('#number').text() // string
+        let newNumber = oldNumber - 0 - 1
+        axios.put('/friends/1', {
+          number: newNumber
+        }).then(()=>{
           $('#number').text(newNumber)
         })
-        $('#reset').on('click', function(){
+      })
+      $('#app').on('click', '#reset', function(){
+        axios.put('/friends/1', {
+          number: 0
+        }).then(()=>{
           $('#number').text(0)
         })
-      }, 2000)
+      })
     </script>
 
     <!-- 下面是 react 官网文档中的第一个例子 -->

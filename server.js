@@ -41,19 +41,19 @@ var server = http.createServer(function(request, response){
     response.setHeader('Content-Type', 'text/html;charset=utf-8')
     response.write(string)
     response.end()
-  } else if (path === '/friends/1'  && method === 'GET') {
+  } else if (path === '/friends/1') {
     let string = `mock data use`
     response.statusCode = 200
     response.setHeader('Content-Type', 'text/html;charset=utf-8')
     response.write(string)
     response.end()
-  } else if (path === '/friends/2'  && method === 'GET') {
+  } else if (path === '/friends/2') {
     let string = `mock data use`
     response.statusCode = 200
     response.setHeader('Content-Type', 'text/html;charset=utf-8')
     response.write(string)
     response.end()
-  }  else if (path === '/friends/3'  && method === 'GET') {
+  }  else if (path === '/friends/3') {
     let string = `mock data use`
     response.statusCode = 200
     response.setHeader('Content-Type', 'text/html;charset=utf-8')
