@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello Gua</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <!-- 这是我导入的 js 库 -->
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const log = function() {
+        console.log.apply(console, arguments)
+      }
+    </script>
+    <!-- 这是方方 从 mvc 到 mvvm 课程中的例子 -->
+    <div id="app">
+      <div>
+        好友: __name__
+        好感度: <span id="number">__number__</span>
+      </div>
+      <div>
+        <button id="addOne">加一</button>
+        <button id="minusOne">减一</button>
+        <button id="reset">清零</button>
+      </div>
+    </div>
+    <script>
+      axios.interceptors.response.use((response) => {
+        // let config = response.config
+        // let {method, url, data} = config // data 是请求的data
+
+        // 下面一行等价于上面两行
+        let {config: {method, url, data}} = response
+
+        if (url === '/friends/1' && method === 'get') {
+          response.data = {
+            name: '沈炳轶',
+            number: 98,
+            id: 1
+          }
+        }
+        return response
+      })
+      axios.get('/friends/1')
+        .then(({data}) => {
+          setTimeout(() => {
+            let originalHtml = $('#app').html()
+            let newHtml = originalHtml.replace('__name__', data.name).replace('__number__', data.number)
+            $('#app').html(newHtml)
+          }, 1000)
+        })
+      setTimeout(() => {
+        $('#addOne').on('click', function(){
+          let oldNumber = $('#number').text() // string
+          let newNumber = oldNumber - 0 + 1
+          $('#number').text(newNumber)
+        })
+        $('#minusOne').on('click', function(){
+          let oldNumber = $('#number').text() // string
+          let newNumber = oldNumber - 0 - 1
+          $('#number').text(newNumber)
+        })
+        $('#reset').on('click', function(){
+          $('#number').text(0)
+        })
+      }, 2000)
+    </script>
+
+    <!-- 下面是 react 官网文档中的第一个例子 -->
+    <div id="root"></div>
+    <script type="text/babel">
+
+      ReactDOM.render(
+        <h1>Hello, world!</h1>,
+        document.getElementById('root')
+      );
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>
