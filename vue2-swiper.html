@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gua Vue 2</title>
+    <style>
+      .slides {
+        background: #ddd;
+        width: 300px;
+        height: 100px;
+        transition: all 1s;
+      }
+      .window {
+        border: 1px dashed green;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <!-- 这是我导入的 js 库 -->
+    <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const log = function() {
+        console.log.apply(console, arguments)
+      }
+    </script>
+    <!-- 这是方方 从 mvc 到 mvvm 课程中的例子 -->
+    <div id="app"></div>
+    <script>
+      /* 使用 vue 来接管 view 和 controller 但是 Model 它不关心 */
+      let view = new Vue({
+        el: '#app',
+        data: {
+          transformValue: ''
+        },
+        template: `
+          <div>
+            <div class="window">
+              <div class="slides"
+              :style="{transform: transformValue}">
+              </div>
+            </div>
+            <button @click="go(0)">1</button>
+            <button @click="go(1)">2</button>
+            <button @click="go(2)">3</button>
+          </div>
+        `,
+        created() {
+
+        },
+        methods: {
+          go(index) {
+            this.transformValue = `translateX(${-100 * index}px)`
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
