@@ -9,6 +9,7 @@
     <!-- 这是我导入的 js 库 -->
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
   </head>
   <body>
     <script>
@@ -42,25 +43,9 @@
         }
       }
 
-
-      /* 2. 用 view 来接管与页面有关的操作*/
-      class View {
-        constructor({el, template}) {
-          // el = element
-          this.el = el
-          this.template = template
-        }
-        render(data) {
-          let html = this.template
-          for(let key in data) {
-            html = html.replace(`__${key}__`, data[key])
-          }
-          $(this.el).html(html)
-        }
-      }
       /* 上面是 mvc 类 */
 
-      let bookModel = new Model({
+      let friendModel = new Model({
         data: {
           name: '',
           number: 0,
@@ -68,66 +53,64 @@
         },
         resource: 'friend'
       })
-      let view = new View({
+      /* 使用 vue 来接管 view 和 controller 但是 Model 它不关心 */
+      let view = new Vue({
         el: '#app',
+        data: {
+          friend: {
+            name: '未命名',
+            number: 0,
+            id: ''
+          },
+          n: 1
+        },
         template: `
           <div>
-            好友: __name__
-            好感度: <span id="number">__number__</span>
+            <div>
+              好友:{{friend.name}}
+              好感度: <span id="number">{{friend.number}}</span>
+            </div>
+            <div>
+              <input v-model="n" />
+              N的值是 {{n}}
+            </div>
+            <div>
+              <button @click="addOne">加N</button>
+              <button @click="minusOne">减N</button>
+              <button @click="reset">清零</button>
+            </div>
           </div>
-          <div>
-            <button id="addOne">加一</button>
-            <button id="minusOne">减一</button>
-            <button id="reset">清零</button>
-          </div>
-        `
-      })
-
-      /* 2. 用 controller 来接管行为 */
-      let controller = {
-        init(options) {
-          let {view, model} = options
-          this.view = view
-          this.model = model
-          this.view.render(this.model.data)
-          this.bindEvents()
-          this.model.fetch(1)
+        `,
+        created() {
+          friendModel.fetch(2)
             .then(() => {
-              this.view.render(this.model.data)
+              this.friend = friendModel.data
             })
         },
-        addOne() {
-          let oldNumber = $('#number').text() // string
-          let newNumber = oldNumber - 0 + 1
-          this.model.update({
-            number: newNumber
-          }).then(()=>{
-            this.view.render(this.model.data)
-          })
-        },
-        minusOne() {
-          let oldNumber = $('#number').text() // string
-          let newNumber = oldNumber - 0 - 1
-          this.model.update({
-            number: newNumber
-          }).then(({data})=>{
-            this.view.render(this.model.data)
-          })
-        },
-        reset() {
-          this.model.update({
-            number: 0
-          }).then(()=>{
-            this.view.render(this.model.data)
-          })
-        },
-        bindEvents() {
-          $(this.view.el).on('click', '#addOne', this.addOne.bind(this))
-          $(this.view.el).on('click', '#minusOne', this.minusOne.bind(this))
-          $(this.view.el).on('click', '#reset', this.reset.bind(this))
+        methods: {
+          addOne() {
+            friendModel.update({
+              number: this.friend.number + (this.n - 0)
+            }).then(()=>{
+              this.friend = friendModel.data
+            })
+          },
+          minusOne() {
+            friendModel.update({
+              number: this.friend.number - (this.n - 0)
+            }).then(({data})=>{
+              this.friend = friendModel.data
+            })
+          },
+          reset() {
+            friendModel.update({
+              number: 0
+            }).then(()=>{
+              this.friend = friendModel.data
+            })
+          },
         }
-      }
-      controller.init({view: view, model: bookModel})
+      })
 
       /* 不要看下面是假的后台 */
       function fakeData() {
@@ -135,6 +118,11 @@
           name: '沈炳轶',
           number: 98,
           id: 1
+        }
+        let friend2 = {
+          name: '殷庆安',
+          number: 1,
+          id: 2
         }
         axios.interceptors.response.use((response) => {
           let {config: {method, url, data}} = response
@@ -144,12 +132,12 @@
             data = JSON.parse(data)
             Object.assign(friend, data)
             response.data = friend
+          } else if (url === '/friends/2' && method === 'put') {
+            data = JSON.parse(data)
+            Object.assign(friend2, data)
+            response.data = friend2
           } else if (url === '/friends/2' && method === 'get') {
-            response.data = {
-              name: '殷庆安',
-              number: 1,
-              id: 2
-            }
+            response.data = friend2
           } else if (url === '/friends/3' && method === 'get') {
             response.data = {
               name: '刘世伟',
