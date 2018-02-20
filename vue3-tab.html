@@ -28,26 +28,27 @@
       let view = new Vue({
         el: '#app',
         data: {
-          selected: 0,
-        
+          selected: 'gua a',
+          tabs: [
+            {name: 'gua a', content: 'gua content a'},
+            {name: 'gua b', content: 'gua content b'},
+            {name: 'gua v', content: 'gua content v'},
+          ]
         },
         template: `
           <div>
             <ol>
               <li
-              @click="selected=0"
-              :class="{active: selected===0}">选项1</li>
-              <li
-              @click="selected=1"
-              :class="{active: selected===1}">选项2</li>
-              <li
-              @click="selected=2"
-              :class="{active: selected===2}">选项3</li>
+                v-for="tab in tabs"
+                @click="selected=tab.name"
+                :class="{active: tab.name===selected}"
+              >{{tab.name}}</li>
             </ol>
             <ol>
-              <li v-show="selected === 0">内容1</li>
-              <li v-show="selected === 1">内容2</li>
-              <li v-show="selected === 2">内容3</li>
+              <li
+                v-for="tab in tabs"
+                v-show="selected === tab.name"
+              >{{tab.content}}</li>
             </ol>
           </div>
 
