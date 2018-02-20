@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gua Vue 1</title>
+    <!-- 这是我导入的 js 库 -->
+    <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const log = function() {
+        console.log.apply(console, arguments)
+      }
+    </script>
+    <!-- 这是方方 从 mvc 到 mvvm 课程中的例子 -->
+    <div id="app"></div>
+    <script>
+      /* 使用 vue 来接管 view 和 controller 但是 Model 它不关心 */
+      let view = new Vue({
+        el: '#app',
+        data: {
+          open: false
+        },
+        template: `
+          <div>
+            <button @click="toggle">Click Me</button>
+            <div v-if="open">
+              Now you see me gua.
+            </div>
+          </div>
+        `,
+        created() {
+
+        },
+        methods: {
+          toggle() {
+            this.open = !this.open
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
