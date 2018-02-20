@@ -33,13 +33,19 @@
       let view = new Vue({
         el: '#app',
         data: {
-          transformValue: ''
+          transformValue: '',
+          images: [
+            'https://i.loli.net/2018/02/20/5a8b83c97e4f0.png',
+            'https://i.loli.net/2018/02/20/5a8b83c97e502.png',
+            'https://i.loli.net/2018/02/20/5a8b83c988900.png'
+          ]
         },
         template: `
           <div>
             <div class="window">
               <div class="slides"
               :style="{transform: transformValue}">
+                <img v-for="url in images" :src="url" height="100px" width="100px" />
               </div>
             </div>
             <button @click="go(0)">1</button>
