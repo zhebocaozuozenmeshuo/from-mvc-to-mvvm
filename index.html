@@ -22,27 +22,53 @@
       fakeData()
       /*上面是假的后台*/
       /* 1. 用 model 来接管与数据有关的操作*/
-      let model = {
-        data: {
-          name: '',
-          number: 0,
-          id: ''
-        },
+      class Model {
+        constructor(options) {
+          this.data = options.data
+          this.resource = options.resource
+        }
         fetch(id) {
-          return axios.get(`/friends/${id}`).then((response) => {
+          return axios.get(`/${this.resource}s/${id}`).then((response) => {
             this.data = response.data
             return response
           })
-        },
+        }
         update(data) {
           let id = this.data.id
-          return axios.put(`/friends/${id}`, data).then((response) => {
+          return axios.put(`/${this.resource}s/${id}`, data).then((response) => {
             this.data = response.data
             return response
           })
         }
       }
-      let view = {
+
+
+      /* 2. 用 view 来接管与页面有关的操作*/
+      class View {
+        constructor({el, template}) {
+          // el = element
+          this.el = el
+          this.template = template
+        }
+        render(data) {
+          let html = this.template
+          for(let key in data) {
+            html = html.replace(`__${key}__`, data[key])
+          }
+          $(this.el).html(html)
+        }
+      }
+      /* 上面是 mvc 类 */
+
+      let bookModel = new Model({
+        data: {
+          name: '',
+          number: 0,
+          id: ''
+        },
+        resource: 'friend'
+      })
+      let view = new View({
         el: '#app',
         template: `
           <div>
@@ -54,12 +80,10 @@
             <button id="minusOne">减一</button>
             <button id="reset">清零</button>
           </div>
-        `,
-        render(data) {
-          let html = this.template.replace('__name__', data.name).replace('__number__', data.number)
-          $(this.el).html(html)
-        }
-      }
+        `
+      })
+
+      /* 2. 用 controller 来接管行为 */
       let controller = {
         init(options) {
           let {view, model} = options
@@ -78,7 +102,7 @@
           this.model.update({
             number: newNumber
           }).then(()=>{
-            this.view.render(model.data)
+            this.view.render(this.model.data)
           })
         },
         minusOne() {
@@ -87,14 +111,14 @@
           this.model.update({
             number: newNumber
           }).then(({data})=>{
-            this.view.render(model.data)
+            this.view.render(this.model.data)
           })
         },
         reset() {
           this.model.update({
             number: 0
           }).then(()=>{
-            this.view.render(model.data)
+            this.view.render(this.model.data)
           })
         },
         bindEvents() {
@@ -103,10 +127,9 @@
           $(this.view.el).on('click', '#reset', this.reset.bind(this))
         }
       }
-      controller.init({view, model})
+      controller.init({view: view, model: bookModel})
 
-
-      /* 下面是假的后台 */
+      /* 不要看下面是假的后台 */
       function fakeData() {
         let friend = {
           name: '沈炳轶',
